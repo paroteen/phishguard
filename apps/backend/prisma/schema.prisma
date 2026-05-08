@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  user
+}
+
+enum Classification {
+  Safe
+  Suspicious
+  Dangerous
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  role         Role     @default(user)
+  isBanned     Boolean  @default(false)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  scans        Scan[]
+}
+
+model Scan {
+  id            String            @id @default(cuid())
+  userId        String
+  originalText  String
+  extractedUrls String[]
+  score         Int
+  classification Classification
+  aiAnalysis    String
+  createdAt     DateTime          @default(now())
+  user          User              @relation(fields: [userId], references: [id])
+  indicators    ThreatIndicator[]
+}
+
+model UrlCheck {
+  id         String   @id @default(cuid())
+  url        String
+  reputation String
+  source     String
+  malicious  Boolean
+  createdAt  DateTime @default(now())
+}
+
+model ThreatIndicator {
+  id          String   @id @default(cuid())
+  scanId      String
+  type        String
+  description String
+  scan        Scan     @relation(fields: [scanId], references: [id])
+}
