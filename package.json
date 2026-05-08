@@ -2,17 +2,14 @@
   "name": "phishguard",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "npm run dev -w @phishguard/backend & npm run dev -w @phishguard/frontend",
-    "dev:backend": "npm run dev -w @phishguard/backend",
-    "dev:frontend": "npm run dev -w @phishguard/frontend",
-    "build": "npm run build -w @phishguard/shared && npm run build -w @phishguard/backend && npm run build -w @phishguard/frontend",
-    "test": "npm run test -ws",
-    "lint": "npm run lint -ws",
-    "format": "npm run format -ws"
+    "dev": "pnpm --parallel --filter @phishguard/backend --filter @phishguard/frontend dev",
+    "dev:backend": "pnpm --filter @phishguard/backend dev",
+    "dev:frontend": "pnpm --filter @phishguard/frontend dev",
+    "build": "pnpm --filter @phishguard/shared build && pnpm --filter @phishguard/backend build && pnpm --filter @phishguard/frontend build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format"
   }
 }

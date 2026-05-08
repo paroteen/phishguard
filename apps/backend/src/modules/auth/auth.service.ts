@@ -4,6 +4,14 @@ import { compare, hash } from "bcryptjs";
 import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto, RegisterDto } from "./dto";
 
+function mustEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required env: ${name}`);
+  }
+  return value;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -32,7 +40,7 @@ export class AuthService {
   async refresh(refreshToken: string) {
     try {
       const payload = await this.jwt.verifyAsync(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET
+        secret: mustEnv("JWT_REFRESH_SECRET")
       });
       return this.createTokens(payload.sub, payload.email, payload.role);
     } catch {
@@ -43,11 +51,11 @@ export class AuthService {
   async createTokens(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
     const accessToken = await this.jwt.signAsync(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
+      secret: mustEnv("JWT_ACCESS_SECRET"),
       expiresIn: process.env.JWT_ACCESS_EXPIRES ?? "15m"
     });
     const refreshToken = await this.jwt.signAsync(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
+      secret: mustEnv("JWT_REFRESH_SECRET"),
       expiresIn: process.env.JWT_REFRESH_EXPIRES ?? "7d"
     });
     return { accessToken, refreshToken };

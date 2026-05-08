@@ -36,24 +36,26 @@ Key integrations:
 ## Local Setup
 
 ```bash
-npm install
-npm run build -w @phishguard/shared
+corepack enable
+corepack prepare pnpm@latest --activate
+pnpm install
+pnpm --filter @phishguard/shared build
 ```
 
 ### Database
 
 ```bash
 docker compose up -d postgres redis
-npm run prisma:generate -w @phishguard/backend
-npm run prisma:migrate -w @phishguard/backend
-npm run prisma:seed -w @phishguard/backend
+pnpm --filter @phishguard/backend prisma:generate
+pnpm --filter @phishguard/backend prisma:migrate
+pnpm --filter @phishguard/backend prisma:seed
 ```
 
 ### Run apps
 
 ```bash
-npm run dev:backend
-npm run dev:frontend
+pnpm dev:backend
+pnpm dev:frontend
 ```
 
 Backend API: `http://localhost:4000/api`  
@@ -127,11 +129,18 @@ Use Vercel for the frontend prototype and deploy backend separately (Railway/Ren
 1. Push this repo to GitHub.
 2. In Vercel, import the repository.
 3. Set **Root Directory** to `apps/frontend`.
-4. Add env var in Vercel:
+4. Set Vercel runtime:
+   - Install Command: `corepack enable && pnpm install --frozen-lockfile=false`
+   - Build Command: `pnpm build`
+5. Add env var in Vercel:
    - `NEXT_PUBLIC_API_BASE_URL=https://<your-backend-domain>/api`
-5. Deploy.
+6. Deploy.
 
 The frontend is already App Router + TypeScript and is Vercel-ready.
+
+### Vercel Env File
+
+Use `.env.vercel.example` as the source for Vercel environment variables.
 
 ## Bonus Roadmap
 
